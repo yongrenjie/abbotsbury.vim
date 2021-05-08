@@ -1,4 +1,4 @@
-function cite#expand_doi()
+function abbot#cite#expand_doi()
     " Check whether the abbot executable exists
     if !executable("abbot")
         call s:abbot_error('`abbot` executable was not found')

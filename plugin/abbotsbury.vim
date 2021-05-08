@@ -17,13 +17,13 @@ function s:abbot_initialise_options()
     if !exists('g:abbot_use_git_email')
         let g:abbot_use_git_email = v:false
     endif
-    if !exists('g:abbot_use_default_mapping')
-        let g:abbot_use_default_mapping = v:true
+    if !exists('g:abbot_use_default_map')
+        let g:abbot_use_default_map = v:true
     endif
 endfunction
 
 call s:abbot_initialise_options()
-nnoremap <silent><buffer> <plug>AbbotExpandDoi :<C-U>call cite#expand_doi()<CR>
-if g:abbot_use_default_mapping
+nnoremap <silent><buffer> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
+if g:abbot_use_default_map
     nmap <silent><buffer> <leader>ex <plug>AbbotExpandDoi
 endif
