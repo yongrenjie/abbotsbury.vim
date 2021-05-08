@@ -46,11 +46,11 @@ function abbot#cite#expand_doi() abort
         call s:abbot_error('invalid DOI ' . doi)
         return 1
     else
-        let doi = shellescape(doi)
+        let escaped_doi = shellescape(doi)
     endif
 
     " Construct the command
-    let command_components = ['abbot', 'cite', doi, '-s', trim(g:abbot_cite_style)]
+    let command_components = ['abbot', 'cite', escaped_doi, '-s', trim(g:abbot_cite_style)]
     if !empty(trim(g:abbot_cite_format))
         call extend(command_components, ['-f', trim(g:abbot_cite_format)])
     endif
@@ -62,9 +62,31 @@ function abbot#cite#expand_doi() abort
     if exit_code
         echohl ErrorMsg | echo stderr | echohl None
     else
-        put =stdout
-        if g:abbot_replace_line
-            norm kdd
+        let stdout_lines = split(stdout, "\n")
+        " Replace text as necessary.
+        if g:abbot_replace_text == 'none'
+            call append('.', stdout_lines)
+        elseif g:abbot_replace_text == 'word'
+            let old_line = getline('.')
+            let x = match(old_line, '\m' . doi)
+            let stdout_lines[0] = slice(old_line, 0, x) . stdout_lines[0]
+            let stdout_lines[-1] = stdout_lines[-1] . slice(old_line, x + len(doi))
+            call setline('.', stdout_lines[0])
+            call append('.', stdout_lines[1:])
+        elseif g:abbot_replace_text == 'line'
+            call setline('.', stdout_lines[0])
+            call append('.', stdout_lines[1:])
+        elseif g:abbot_replace_text == 'linespace'
+            if line('.') > 1 && !empty(trim(getline(line('.') - 1)))
+                " Add a blank line before
+                call insert(stdout_lines, "")
+            endif
+            if line('.') < line('$') && !empty(trim(getline(line('.') + 1)))
+                " Add a blank line after
+                call add(stdout_lines, "")
+            endif
+            call setline('.', stdout_lines[0])
+            call append('.', stdout_lines[1:])
         endif
     endif
     call setenv('ABBOT_EMAIL', old_abbot_email)

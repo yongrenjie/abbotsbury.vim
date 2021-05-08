@@ -17,7 +17,7 @@ CONTENTS                                             *abbot-contents*
 3. Settings ........................................ |abbot-settings|
   3.1  Citation style .............................. |abbot-cite-style|
   3.2  Output format ............................... |abbot-cite-format|
-  3.3  Whitespace addition ......................... |abbot-whitespace|
+  3.3  Choosing how much text to replace ........... |abbot-replace-text|
   3.4  Using your git email for Crossref............ |abbot-git-email|
   3.5  Default maps ................................ |abbot-default-map|
 4. Contact ......................................... |abbot-contact|
@@ -119,10 +119,42 @@ on a per-filetype basis. For example, you can place the following in
     let g:abbot_cite_format="md"
 
 ------------------------------------------------------------------------------
- 3.3  WHITESPACE ADDITION                            *abbot-whitespace*
-                                                     *g:abbot_whitespace*
+ 3.3  CHOOSING HOW MUCH TEXT TO REPLACE              *abbot-replace-text*
+                                                     *g:abbot_replace_text*
 
-Not implemented yet.
+When you expand a DOI into a citation, you can change exactly how the DOI is
+replaced with the generated citation using |g:abbot_replace_text|. It is
+probably easiest to demonstrate this with some (rather contrived) examples.
+
+    'none' - This simply pastes the citation on the line after the DOI. It
+             does not actually replace the DOI.
+             Before:   foooooooooooo       After:   foooooooooooo
+                       foo {doi} bar                foo {doi} bar
+                       barrrrrrrrrrr                {citation}
+                                                    barrrrrrrrrrr
+
+    'word' - (Default.) This replaces the DOI with the citation, but preserves
+             words around the DOI. 
+             Before:   foooooooooooo       After:   foooooooooooo
+                       foo {doi} bar                foo {citation} bar
+                       barrrrrrrrrrr                barrrrrrrrrrr
+
+    'line' - This replaces the entire line containing the DOI with the
+             citation, deleting around the DOI. 
+             Before:   foooooooooooo       After:   foooooooooooo
+                       foo {doi} bar                {citation}
+                       barrrrrrrrrrr                barrrrrrrrrrr
+
+    'linespace' - This replaces the entire line containing the DOI with the
+                  citation, deleting around the DOI. Additionally, it also
+                  adds empty lines around the citation if it isn't already
+                  surrounded by empty lines and if it isn't at the edge of the
+                  document.
+             Before:   foooooooooooo       After:   foooooooooooo
+                       foo {doi} bar
+                       barrrrrrrrrrr                {citation}
+
+                                                    barrrrrrrrrrr
 
 ------------------------------------------------------------------------------
  3.4  USING YOUR GIT EMAIL FOR CROSSREF              *abbot-git-email*
