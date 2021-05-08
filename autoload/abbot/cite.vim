@@ -1,4 +1,4 @@
-function abbot#cite#expand_doi()
+function abbot#cite#expand_doi() abort
     " Check whether the abbot executable exists
     if !executable("abbot")
         call s:abbot_error('`abbot` executable was not found')
@@ -58,26 +58,40 @@ function abbot#cite#expand_doi()
     
     " Get the citation
     echo 'abbotsbury.vim: expanding DOI ' . doi . '...'
-    silent let output = system(command)
-    if v:shell_error
-        " Strip ANSI escape sequences. The first part of the regex catches
-        " escape sequences. The second part catches everything that isn't a
-        " printable character or a newline.
-        let sanitised_stderr = trim(substitute(output, '\e\[[0-9;]*m\|[^[:print:]\n]', '', 'g'))
-        echohl ErrorMsg | echo sanitised_stderr | echohl None
-        call setenv('ABBOT_EMAIL', old_abbot_email)
-        return 1
+    let [exit_code, stdout, stderr] = s:system_sync(command)
+    if exit_code
+        echohl ErrorMsg | echo stderr | echohl None
     else
-        put =output
+        put =stdout
         if g:abbot_replace_line
             norm kdd
         endif
-        call setenv('ABBOT_EMAIL', old_abbot_email)
+    endif
+    call setenv('ABBOT_EMAIL', old_abbot_email)
+    return exit_code
+endfunction
+
+
+" Runs a system command synchronously (blocking vim operation) and returns a
+" list of three items: the exit code, the sanitised stdout, and the sanitised
+" stderr. 'Sanitised' in this case refers to stripping all ANSI escape codes
+" as well as unprintable characters.
+" Note that, because separating stdout from stderr is extremely painful, this
+" function assumes that stdout and stderr are mutually exclusive. That is, if
+" the command runs successfully then it only prints to stdout; and if it fails
+" then it only prints to stderr.
+function s:system_sync(command) abort
+    silent let output = system(a:command)
+    let sanitised_output = trim(substitute(output, '\e\[[0-9;]*m\|[^[:print:]\n]', '', 'g'))
+    if v:shell_error
+        return [v:shell_error, "", sanitised_output]
+    else
+        return [v:shell_error, sanitised_output, ""]
     endif
 endfunction
 
 
 " Pretty-print an error message.
-function s:abbot_error(err_msg)
+function s:abbot_error(err_msg) abort
     echohl ErrorMsg | echo 'abbotsbury.vim: ' . a:err_msg | echohl None
 endfunction
