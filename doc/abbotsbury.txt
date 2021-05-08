@@ -1,0 +1,172 @@
+*abbotsbury.txt* Vim plugin utilising abbotsbury for citation generation
+*abbot* *abbotsbury* *abbotsbury-vim*
+
+Author:       Jonathan Yong <yongrenjie@gmail.com>
+URL:          https://github.com/yongrenjie/abbotsbury.vim
+License:      MIT
+Last updated: 8 May 2021
+
+
+==============================================================================
+CONTENTS                                             *abbot-contents*
+
+1.   Installation .................................. |abbot-installation|
+  1.1  The abbot command-line executable ........... |abbot-executable|
+  1.2  The abbotsbury.vim plugin ................... |abbot-vim-plugin|
+2. Usage ........................................... |abbot-usage|
+3. Settings ........................................ |abbot-settings|
+  3.1  Citation style .............................. |abbot-cite-style|
+  3.2  Output format ............................... |abbot-cite-format|
+  3.3  Whitespace addition ......................... |abbot-whitespace|
+  3.4  Using your git email for Crossref............ |abbot-git-email|
+  3.5  Default maps ................................ |abbot-default-map|
+4. Contact ......................................... |abbot-contact|
+
+
+==============================================================================
+ 1    INSTALLATION                                   *abbot-installation*
+
+------------------------------------------------------------------------------
+ 1.1  THE ABBOT COMMAND-LINE EXECUTABLE              *abbot-executable*
+
+To use abbotsbury.vim, you need to first install the abbot command-line
+programme. If you are on macOS, this is most easily accomplished via Homebrew:
+>
+    $ brew tap yongrenjie/abbotsbury
+    $ brew install abbotsbury
+
+For Linux and macOS, there are precompiled binaries available on GitHub:
+
+    https://github.com/yongrenjie/abbotsbury/releases
+
+You can also compile from source. To do this, you will need a Haskell
+installation as well as the cabal-install tool. Then run:
+>
+    $ git clone https://github.com/yongrenjie/abbotsbury
+    $ cd abbotsbury
+    $ cabal install exe:abbot
+
+and ensure that the directory that cabal installs the executables to is placed
+in the PATH environment variable. By default this is ~/.cabal/bin.
+
+Note that the plugin will only work with v0.1.0.10 and above of abbot. You
+can check this after installation by running
+>
+    $ abbot --version
+
+------------------------------------------------------------------------------
+ 1.2  THE ABBOTSBURY.VIM PLUGIN                      *abbot-vim-plugin*
+
+You can obtain this plugin via all the usual methods, such as vim-plug etc.
+The GitHub repository is
+
+    https://github.com/yongrenjie/abbotsbury.vim
+
+
+==============================================================================
+ 2    USAGE                                          *abbot-usage*
+
+The basic premise of |abbotsbury-vim| is that you place your cursor over a DOI
+and expand it into a citation. You should either use the default mapping,
+which does this:
+
+    <leader>ex
+
+or define your own mapping (see |abbot-default-map| for instructions).
+
+==============================================================================
+ 3    SETTINGS                                       *abbot-settings*
+
+There are a small number of settings you can change in order to get the most
+out of |abbotsbury-vim|. These are detailed in the following section.
+
+------------------------------------------------------------------------------
+ 3.1  CITATION STYLE                                 *abbot-cite-style*
+                                                     *g:abbot_cite_style*
+
+The |abbot| command-line tool provides a few different "citation styles". As
+of the time of writing, these are:
+
+    Citation style                 Set |g:abbot_cite_style| to
+    -------------------------      -------------------------
+    American Chemical Society      "a" or "acs" (default)
+    BibLaTeX                       "b" or "bib"
+
+Depending on the filetype you are working on, you may want to choose one of
+these. For example, you can place the following in ~/.vim/ftplugin/bib.vim
+to make |abbot| output BibLaTeX citations in .bib files:
+>
+    let g:abbot_cite_style="bib"
+
+------------------------------------------------------------------------------
+ 3.2  OUTPUT FORMAT                                  *abbot-cite-format*
+                                                     *g:abbot_cite_format*
+
+Likewise, |abbot| also supports output in several different formats. As of the
+time of writing, these are:
+
+    Output format            Set |g:abbot_cite_format| to
+    ----------------         ------------------------------
+    Plain text               "t" or "text" (default)
+    Markdown                 "m" or "md" or "markdown"
+    reStructuredText         "r" or "rst" or "restructured"
+    HTML                     "h" or "html"
+
+As with the citation style (|abbot-cite-style|), you may want to change this
+on a per-filetype basis. For example, you can place the following in
+~/.vim/ftplugin/markdown.vim:
+>
+    let g:abbot_cite_format="md"
+
+------------------------------------------------------------------------------
+ 3.3  WHITESPACE ADDITION                            *abbot-whitespace*
+                                                     *g:abbot_whitespace*
+
+Not implemented yet.
+
+------------------------------------------------------------------------------
+ 3.4  USING YOUR GIT EMAIL FOR CROSSREF              *abbot-git-email*
+                                                     *g:abbot_use_git_email*
+
+|abbot| obtains its metadata from Crossref, which provides a public API for
+this. However, Crossref also requests that users pass some form of contact
+information in their HTTPS requests. This means that as a user of |abbot|, you
+need to provide some kind of contact information. The benefit of this is that
+you get redirected to a "polite" user pool which is sometimes faster.
+
+There are two ways of doing this. You can either make sure that the
+$ABBOT_EMAIL environment variable is set to your own email, or if you don't
+want to do that, you can tell |abbotsbury-vim| to try and get your email from
+your Git configuration file:
+>
+    let g:abbot_use_git_email=1
+
+------------------------------------------------------------------------------
+ 3.5  DEFAULT MAPS                                   *abbot-default-map*
+                                                     *g:abbot_use_default_map*
+
+The default sequence of keys for expanding DOIs is
+
+    <leader>ex
+
+However, you might not like this. In order to replace the default keymap, you
+can use the following:
+>
+    let g:abbot_use_default_mapping=0
+    nmap {lhs} <plug>AbbotExpandDoi
+
+This will make the series of keys {lhs} perform the DOI expansion.
+
+
+==============================================================================
+ 4    CONTACT                                        *abbot-contact*
+
+If you wish to report a bug, or propose a new feature, please create an issue
+on GitHub.
+
+    https://github.com/yongrenjie/abbotsbury.vim/issues
+
+
+==============================================================================
+(c) Jonathan Yong, 2021
+vim:tw=78:expandtab:ft=help:norl:
