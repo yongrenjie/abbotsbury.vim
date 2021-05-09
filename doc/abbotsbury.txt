@@ -62,6 +62,8 @@ The GitHub repository is
 
     https://github.com/yongrenjie/abbotsbury.vim
 
+abbotsbury.vim requires vim v8.0.1630 or later.
+
 
 ==============================================================================
  2    USAGE                                          *abbot-usage*

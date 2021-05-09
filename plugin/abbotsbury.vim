@@ -3,6 +3,12 @@ if !get(g:, 'abbot_enabled', 1)
     finish
 endif
 
+" Check vim version.
+if !(v:version > 800 || (v:version == 800 && has('patch1630')))
+    echohl ErrorMsg | echo 'abbotsbury.vim: vim v8.0.1630 or newer is required. Aborting...' | echohl None
+    finish
+endif
+
 " Initialise default options.
 function s:abbot_initialise_options()
     if !exists('g:abbot_cite_style')
