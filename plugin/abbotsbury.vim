@@ -11,8 +11,8 @@ function s:abbot_initialise_options()
     if !exists('g:abbot_cite_format')
         let g:abbot_cite_format = 'text'
     endif
-    if !exists('g:abbot_whitespace')
-        let g:abbot_whitespace = 'word'
+    if !exists('g:abbot_replace_text')
+        let g:abbot_replace_text = 'word'
     endif
     if !exists('g:abbot_use_git_email')
         let g:abbot_use_git_email = v:false
