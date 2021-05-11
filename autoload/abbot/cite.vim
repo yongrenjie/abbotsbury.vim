@@ -1,34 +1,21 @@
+" Sentinel value to use whenever the executable isn't found.
+let s:abbot_not_found = [0, 0, 0, 0]
+
+" Cache the executable version so that we don't check it literally every time.
+let s:abbot_version_is_cached = v:false
+let s:abbot_version_cache_value = s:abbot_not_found
+
+" The main function.
 function abbot#cite#expand_doi() abort
-    " Check whether the abbot executable exists
-    if !executable("abbot")
+    " Check whether abbot exists, and whether it is sufficiently up-to-date.
+    let abbot_version = s:get_abbot_version()
+    if abbot_version == s:abbot_not_found
         call s:abbot_error('`abbot` executable was not found')
         return 1
+    elseif s:compare_version(abbot_version, [0, 1, 1, 2]) < 0
+        call s:abbot_error('requires `abbot` version 0.1.1.2 or newer, please update `abbot`')
+        return 1
     endif
-
-    " Check for email.
-    let email = ""
-    " Get it from ABBOT_EMAIL environment variable first.
-    if has_key(environ(), 'ABBOT_EMAIL')
-        let email = getenv('ABBOT_EMAIL')
-    else
-        " Check for email via `git config`.
-        if g:abbot_use_git_email
-            silent let git_email = trim(system('git config --get user.email'))
-            if v:shell_error || empty(git_email)
-                call s:abbot_error("`couldn't get email via `git config`")
-                return 1
-            else
-                let email = git_email
-            endif
-        " User didn't want to use git email, but also didn't set ABBOT_EMAIL.
-        else
-            call s:abbot_error('ABBOT_EMAIL environment variable was not defined')
-            return 1
-        endif
-    endif
-    " Temporarily set ABBOT_EMAIL to that.
-    let old_abbot_email = getenv('ABBOT_EMAIL')
-    call setenv('ABBOT_EMAIL', email)
 
     " Check that style is set
     if !exists('g:abbot_cite_style')
@@ -53,6 +40,9 @@ function abbot#cite#expand_doi() abort
     let command_components = ['abbot', 'cite', escaped_doi, '-s', trim(g:abbot_cite_style)]
     if !empty(trim(g:abbot_cite_format))
         call extend(command_components, ['-f', trim(g:abbot_cite_format)])
+    endif
+    if g:abbot_use_git_email
+        call extend(command_components, ['--use-git-email'])
     endif
     let command = join(command_components)
     
@@ -91,7 +81,6 @@ function abbot#cite#expand_doi() abort
             call append('.', stdout_lines[1:])
         endif
     endif
-    call setenv('ABBOT_EMAIL', old_abbot_email)
     return exit_code
 endfunction
 
@@ -118,4 +107,56 @@ endfunction
 " Pretty-print an error message.
 function s:abbot_error(err_msg) abort
     echohl ErrorMsg | echo 'abbotsbury.vim: ' . a:err_msg | echohl None
+endfunction
+
+
+" Check whether the `abbot` executable exists, and get its version. If the
+" executable doesn't exist this returns [0, 0, 0, 0].
+function s:get_abbot_version() abort
+    if s:abbot_version_is_cached
+        return s:abbot_version_cache_value
+    else
+        if !executable("abbot")
+            let s:abbot_version_is_cached = v:true
+            let s:abbot_version_cache_value = s:abbot_not_found
+            return s:abbot_not_found
+        endif
+        silent let output = system('abbot --version')
+        let abbot_version = split(split(trim(output))[2], '\.')
+        call map(abbot_version, 'str2nr(v:val)')
+        let s:abbot_version_is_cached = v:true
+        let s:abbot_version_cache_value = abbot_version
+        return abbot_version
+    endif
+endfunction
+
+
+" Check two version numbers. Returns +1 if v1 > v2, etc. (similar to strcmp).
+" This assumes that both versions passed (a:v1 and a:v2) are lists of four
+" numbers.
+function s:compare_version(v1, v2) abort
+    if a:v1[0] > a:v2[0]
+        return 1
+    elseif a:v1[0] < a:v2[0]
+        return -1
+    else
+        if a:v1[1] > a:v2[1]
+            return 1
+        elseif a:v1[1] < a:v2[1]
+            return -1
+        else
+            if a:v1[2] > a:v2[2]
+                return 1
+            elseif a:v1[2] < a:v2[2]
+                return -1
+            else
+                if a:v1[3] > a:v2[3]
+                    return 1
+                elseif a:v1[3] < a:v2[3]
+                    return -1
+                endif
+            endif
+        endif
+    endif
+    return 0
 endfunction
