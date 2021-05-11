@@ -62,6 +62,8 @@ function abbot#cite#expand_doi() abort
     if exit_code
         echohl ErrorMsg | echo stderr | echohl None
     else
+        " Clear the echoed message.
+        redraw!
         let stdout_lines = split(stdout, "\n")
         " Replace text as necessary.
         if g:abbot_replace_text == 'none'
