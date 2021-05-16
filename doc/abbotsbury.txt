@@ -185,7 +185,7 @@ The default sequence of keys for expanding DOIs is
     <leader>ex
 
 However, you might not like this. In order to replace the default keymap, you
-can place the following in your vimrc:
+can place the following in your .vimrc:
 >
     let g:abbot_use_default_mapping=0
     nmap <silent> {lhs} <plug>AbbotExpandDoi
@@ -200,6 +200,9 @@ Additionally, |abbotsbury-vim| provides a slightly simplistic olution for
 folding in .bib files. This is disabled by default. To turn it on, use
 >
     let g:abbot_bib_folding=1
+
+You can put that either in .vimrc or in .vim/ftplugin/bib.vim, either will
+work (but not .vim/after/ftplugin/bib.vim!)
 
 ==============================================================================
  4    CONTACT                                        *abbot-contact*
