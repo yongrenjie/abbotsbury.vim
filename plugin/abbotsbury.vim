@@ -29,7 +29,7 @@ function s:abbot_initialise_options()
 endfunction
 
 call s:abbot_initialise_options()
-nnoremap <silent><buffer> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
+nnoremap <silent> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
 if g:abbot_use_default_map
-    nmap <silent><buffer> <leader>ex <plug>AbbotExpandDoi
+    nmap <silent> <leader>ex <plug>AbbotExpandDoi
 endif
