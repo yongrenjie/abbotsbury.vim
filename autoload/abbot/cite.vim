@@ -12,8 +12,8 @@ function abbot#cite#expand_doi() abort
     if abbot_version == s:abbot_not_found
         call s:abbot_error('`abbot` executable was not found')
         return 1
-    elseif s:compare_version(abbot_version, [0, 1, 1, 2]) < 0
-        call s:abbot_error('requires `abbot` version 0.1.1.2 or newer, please update `abbot`')
+    elseif s:compare_version(abbot_version, [0, 2, 1, 0]) < 0
+        call s:abbot_error('requires `abbot` version 0.2.1.0 or newer, please update `abbot`')
         return 1
     endif
 

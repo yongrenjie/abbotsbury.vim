@@ -20,6 +20,7 @@ CONTENTS                                             *abbot-contents*
   3.3  Choosing how much text to replace ........... |abbot-replace-text|
   3.4  Using your git email for Crossref............ |abbot-git-email|
   3.5  Default maps ................................ |abbot-default-map|
+  3.6  Bib file folding ............................ |abbot-bib-folding|
 4. Contact ......................................... |abbot-contact|
 
 
@@ -49,8 +50,8 @@ installation as well as the cabal-install tool. Then run:
 and ensure that the directory that cabal installs the executables to is placed
 in the PATH environment variable. By default this is ~/.cabal/bin.
 
-Note that the plugin will only work with v0.1.0.10 and above of abbot. You
-can check this after installation by running
+Note that the plugin will only work with v0.2.1.0 and above of abbot. You can
+check this after installation by running
 >
     $ abbot --version
 
@@ -184,13 +185,21 @@ The default sequence of keys for expanding DOIs is
     <leader>ex
 
 However, you might not like this. In order to replace the default keymap, you
-can use the following:
+can place the following in your vimrc:
 >
     let g:abbot_use_default_mapping=0
-    nmap {lhs} <plug>AbbotExpandDoi
+    nmap <silent> {lhs} <plug>AbbotExpandDoi
 
 This will make the series of keys {lhs} perform the DOI expansion.
 
+------------------------------------------------------------------------------
+ 3.6  BIB FILE FOLDING                               *abbot-bib-folding*
+                                                     *g:abbot_bib_folding*
+
+Additionally, |abbotsbury-vim| provides a slightly simplistic olution for
+folding in .bib files. This is disabled by default. To turn it on, use
+>
+    let g:abbot_bib_folding=1
 
 ==============================================================================
  4    CONTACT                                        *abbot-contact*
