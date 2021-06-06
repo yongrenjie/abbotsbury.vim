@@ -1,40 +1,46 @@
+" Generates fold text for folded bib references (the folding itself is handled
+" using foldmethod=syntax; this just generates the 'short form' displayed on
+" the fold line).
 function! AbbotBibFoldText() abort
-    let l:lnum = v:foldstart
-    let l:type = ''
-    let l:title = ''
-    while l:lnum <= v:foldend
-        let l:type_match = matchlist(
-                    \ getline(l:lnum),
+    let lnum = v:foldstart   " start of fold
+    let identifier = ''      " e.g. article{Claridge2019MRC}
+    let title = ''           " title of the work
+    " Search inside the fold for the type of the work and the bib identifier
+    while lnum <= v:foldend
+        let identifier_match = matchlist(
+                    \ getline(lnum),
                     \ '\v\@(\S+)\s*\{\s*(\S+),'
                     \ )
-        if l:type_match != []
-            let l:type = l:type_match[1] . '{' . l:type_match[2] . '}'
+        if identifier_match != []
+            let identifier = identifier_match[1] . '{' . identifier_match[2] . '}'
             break
         else
-            let l:lnum += 1
+            let lnum += 1
         endif
     endwhile
-    let l:lnum = v:foldstart
-    while l:lnum <= v:foldend
-        let l:title_match = matchlist(
-                    \ getline(l:lnum),
+    " Search inside the fold for the title of the work
+    let lnum = v:foldstart
+    while lnum <= v:foldend
+        let title_match = matchlist(
+                    \ getline(lnum),
                     \ '\v^\s*title\s*\=\s*(\{(.+)\}|\"(.+)\")\s*,'
                     \ )
-        if l:title_match != []
-            let l:title = l:title_match[2]
+        if title_match != []
+            let title = title_match[2]
             break
         else
-            let l:lnum += 1
+            let lnum += 1
         endif
     endwhile
-    if strlen(l:type) > 0
-        if strlen(l:title) > 0
-            return '+-- ' . l:type . ' -- ' . l:title . ' '
+    " Construct the fold text
+    if strlen(identifier) > 0
+        if strlen(title) > 0
+            return '+-- ' . identifier . ' -- ' . title . ' '
         else
-            return '+-- ' . l:type . ' '
+            return '+-- ' . identifier . ' '
         endif
     else
-        " wasn't found. Just return the default fold text
+        " Wasn't found. Just return the default fold text
         return foldtext()
     endif
 endfunction
