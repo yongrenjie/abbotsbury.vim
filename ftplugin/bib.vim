@@ -2,45 +2,46 @@
 " using foldmethod=syntax; this just generates the 'short form' displayed on
 " the fold line).
 function! AbbotBibFoldText() abort
-    let lnum = v:foldstart   " start of fold
-    let identifier = ''      " e.g. article{Claridge2019MRC}
+    let entry_type = ''      " e.g. article, book, thesis, ...
+    let identifier = ''      " the bib identifier
     let title = ''           " title of the work
-    " Search inside the fold for the type of the work and the bib identifier
-    while lnum <= v:foldend
-        let identifier_match = matchlist(
-                    \ getline(lnum),
-                    \ '\v\@(\S+)\s*\{\s*(\S+),'
-                    \ )
-        if identifier_match != []
-            let identifier = identifier_match[1] . '{' . identifier_match[2] . '}'
-            break
-        else
-            let lnum += 1
+    " Parse the first line of the fold for the entry type and the identifier.
+    let entry_type_identifier_match = matchlist(getline(v:foldstart),
+                \ '\v\@(\S+)\s*\{\s*%((\S+)\s*,)?')
+    if entry_type_identifier_match != []
+        let entry_type = entry_type_identifier_match[1]
+        let identifier = entry_type_identifier_match[2]
+        " Check if the identifier is actually on the next line.
+        if empty(identifier)
+            let nextline_match = matchlist(getline(v:foldstart + 1),
+                        \ '\v^\s*(\S+)\s*,')
+            if !empty(nextline_match)
+                let identifier = nextline_match[1]
         endif
-    endwhile
-    " Search inside the fold for the title of the work
+    endif
+    " Search inside the fold for the title of the work (or the entryset, if
+    " it's a set)
+    let title_regex = entry_type == 'set' ? 
+                \ '\v^\s*entryset\s*\=\s*(\{.+\}|\".+\")\s*,?' :
+                \ '\v^\s*title\s*\=\s*(\{.+\}|\".+\")\s*,?'
     let lnum = v:foldstart
     while lnum <= v:foldend
-        let title_match = matchlist(
-                    \ getline(lnum),
-                    \ '\v^\s*title\s*\=\s*(\{(.+)\}|\"(.+)\")\s*,'
-                    \ )
+        let title_match = matchlist(getline(lnum), title_regex)
         if title_match != []
-            let title = title_match[2]
+            " remove surrounding braces or quotes
+            let title = title_match[1][1:-2]
             break
         else
             let lnum += 1
         endif
     endwhile
     " Construct the fold text
-    if strlen(identifier) > 0
-        if strlen(title) > 0
-            return '+-- ' . identifier . ' -- ' . title . ' '
-        else
-            return '+-- ' . identifier . ' '
-        endif
+    if !empty(entry_type) && !empty(identifier) && !empty(title)
+        return '+-- ' . entry_type . '{' . identifier . '} -- ' . title . ' '
+    elseif !empty(entry_type) && !empty(identifier)
+        return '+-- ' . entry_type . '{' . identifier . '} '
     else
-        " Wasn't found. Just return the default fold text
+        " information wasn't found. Just return the default fold text
         return foldtext()
     endif
 endfunction
