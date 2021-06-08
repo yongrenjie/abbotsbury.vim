@@ -36,10 +36,16 @@ function! AbbotBibFoldText() abort
         endif
     endwhile
     " Construct the fold text
-    if !empty(entry_type) && !empty(identifier) && !empty(title)
-        return '+-- ' . entry_type . '{' . identifier . '} -- ' . title . ' '
-    elseif !empty(entry_type) && !empty(identifier)
-        return '+-- ' . entry_type . '{' . identifier . '} '
+    if !empty(entry_type) && !empty(identifier)
+        let l:text = '@' . entry_type . '{' . identifier . '}'
+        " advance to the next 'tab' of 4 spaces
+        let l:width = strlen(l:text)
+        let l:printf_width = max([32, l:width + 4 - (l:width % 4)])
+        let l:text = printf('%-' . l:printf_width . 's', l:text)
+        if !empty(title)
+            let l:text = l:text . title
+        endif
+        return l:text
     else
         " information wasn't found. Just return the default fold text
         return foldtext()
