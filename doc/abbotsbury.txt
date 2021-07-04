@@ -2,7 +2,8 @@
 *abbot* *abbotsbury* *abbotsbury-vim*
 
 Author:       Jonathan Yong <yongrenjie@gmail.com>
-URL:          https://github.com/yongrenjie/abbotsbury.vim License:      MIT
+URL:          https://github.com/yongrenjie/abbotsbury.vim
+License:      MIT
 Last updated: 4 July 2021
 
 
@@ -48,7 +49,7 @@ installation as well as the cabal-install tool. Then run:
 and ensure that the directory that cabal installs the executables to is placed
 in the PATH environment variable. By default this is ~/.cabal/bin.
 
-Note that the plugin will only work with v0.2.1.0 and above of abbot. You can
+Note that the plugin will only work with v0.3.1.0 and above of abbot. You can
 check this after installation by running
 >
     $ abbot --version
