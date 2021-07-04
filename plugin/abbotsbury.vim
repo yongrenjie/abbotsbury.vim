@@ -26,9 +26,6 @@ function s:abbot_initialise_options()
     if !exists('g:abbot_use_default_map')
         let g:abbot_use_default_map = v:true
     endif
-    if !exists('g:abbot_bib_folding')
-        let g:abbot_bib_folding = v:false
-    endif
 endfunction
 
 call s:abbot_initialise_options()

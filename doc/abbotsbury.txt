@@ -2,9 +2,8 @@
 *abbot* *abbotsbury* *abbotsbury-vim*
 
 Author:       Jonathan Yong <yongrenjie@gmail.com>
-URL:          https://github.com/yongrenjie/abbotsbury.vim
-License:      MIT
-Last updated: 8 May 2021
+URL:          https://github.com/yongrenjie/abbotsbury.vim License:      MIT
+Last updated: 4 July 2021
 
 
 ==============================================================================
@@ -20,7 +19,6 @@ CONTENTS                                             *abbot-contents*
   3.3  Choosing how much text to replace ........... |abbot-replace-text|
   3.4  Using your git email for Crossref............ |abbot-git-email|
   3.5  Default maps ................................ |abbot-default-map|
-  3.6  Bib file folding ............................ |abbot-bib-folding|
 4. Contact ......................................... |abbot-contact|
 
 
@@ -191,18 +189,6 @@ can place the following in your .vimrc:
     nmap <silent> {lhs} <plug>AbbotExpandDoi
 
 This will make the series of keys {lhs} perform the DOI expansion.
-
-------------------------------------------------------------------------------
- 3.6  BIB FILE FOLDING                               *abbot-bib-folding*
-                                                     *g:abbot_bib_folding*
-
-Additionally, |abbotsbury-vim| provides a slightly simplistic olution for
-folding in .bib files. This is disabled by default. To turn it on, use
->
-    let g:abbot_bib_folding=1
-
-You can put that either in .vimrc or in .vim/ftplugin/bib.vim, either will
-work (but not .vim/after/ftplugin/bib.vim!)
 
 ==============================================================================
  4    CONTACT                                        *abbot-contact*
