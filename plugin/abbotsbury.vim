@@ -10,6 +10,6 @@ if !(v:version > 800 || (v:version == 800 && has('patch1630')))
 endif
 
 augroup abbotsbury_ft
-    autocmd FileType <buffer> call abbot#initialise()
+    autocmd FileType * call abbot#initialise()
 augroup END
-nnoremap <silent><buffer> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
+nnoremap <silent> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>

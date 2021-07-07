@@ -6,7 +6,7 @@ function abbot#initialise()
         if &filetype == 'bib'
             let b:abbot_cite_style = 'bib'
         else
-            let b:abbot_cite_style = 'bib'
+            let b:abbot_cite_style = 'acs'
         endif
     endif
     if !exists('b:abbot_cite_format')
