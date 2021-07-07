@@ -18,7 +18,7 @@ function abbot#cite#expand_doi() abort
     endif
 
     " Check that style is set
-    if !exists('g:abbot_cite_style')
+    if !exists('b:abbot_cite_style')
         call s:abbot_error('no citation style was defined')
         return 1
     endif
@@ -37,9 +37,9 @@ function abbot#cite#expand_doi() abort
     endif
 
     " Construct the command
-    let command_components = ['abbot', 'cite', escaped_doi, '-s', trim(g:abbot_cite_style)]
-    if !empty(trim(g:abbot_cite_format))
-        call extend(command_components, ['-f', trim(g:abbot_cite_format)])
+    let command_components = ['abbot', 'cite', escaped_doi, '-s', trim(b:abbot_cite_style)]
+    if !empty(trim(b:abbot_cite_format))
+        call extend(command_components, ['-f', trim(b:abbot_cite_format)])
     endif
     if g:abbot_use_git_email
         call extend(command_components, ['--use-git-email'])
@@ -58,17 +58,17 @@ function abbot#cite#expand_doi() abort
         " Replace text as necessary.
         if g:abbot_replace_text == 'none'
             call append('.', stdout_lines)
-        elseif g:abbot_replace_text == 'word'
+        elseif b:abbot_replace_text == 'word'
             let old_line = getline('.')
             let x = match(old_line, '\m' . doi)
             let stdout_lines[0] = slice(old_line, 0, x) . stdout_lines[0]
             let stdout_lines[-1] = stdout_lines[-1] . slice(old_line, x + len(doi))
             call setline('.', stdout_lines[0])
             call append('.', stdout_lines[1:])
-        elseif g:abbot_replace_text == 'line'
+        elseif b:abbot_replace_text == 'line'
             call setline('.', stdout_lines[0])
             call append('.', stdout_lines[1:])
-        elseif g:abbot_replace_text == 'linespace'
+        elseif b:abbot_replace_text == 'linespace'
             if line('.') > 1 && !empty(trim(getline(line('.') - 1)))
                 " Add a blank line before
                 call insert(stdout_lines, "")

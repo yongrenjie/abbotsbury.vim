@@ -9,27 +9,7 @@ if !(v:version > 800 || (v:version == 800 && has('patch1630')))
     finish
 endif
 
-" Initialise default options.
-function s:abbot_initialise_options()
-    if !exists('g:abbot_cite_style')
-        let g:abbot_cite_style = 'acs'
-    endif
-    if !exists('g:abbot_cite_format')
-        let g:abbot_cite_format = 'text'
-    endif
-    if !exists('g:abbot_replace_text')
-        let g:abbot_replace_text = 'word'
-    endif
-    if !exists('g:abbot_use_git_email')
-        let g:abbot_use_git_email = v:false
-    endif
-    if !exists('g:abbot_use_default_map')
-        let g:abbot_use_default_map = v:true
-    endif
-endfunction
-
-call s:abbot_initialise_options()
-nnoremap <silent> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
-if g:abbot_use_default_map
-    nmap <silent> <leader>ex <plug>AbbotExpandDoi
-endif
+augroup abbotsbury_ft
+    autocmd FileType <buffer> call abbot#initialise()
+augroup END
+nnoremap <silent><buffer> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>

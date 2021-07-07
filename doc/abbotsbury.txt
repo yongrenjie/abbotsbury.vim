@@ -84,48 +84,61 @@ out of |abbotsbury-vim|. These are detailed in the following section.
 
 ------------------------------------------------------------------------------
  3.1  CITATION STYLE                                 *abbot-cite-style*
-                                                     *g:abbot_cite_style*
+                                                     *b:abbot_cite_style*
 
 The |abbot| command-line tool provides a few different "citation styles". As
 of the time of writing, these are:
 
-    Citation style                 Set |g:abbot_cite_style| to
+    Citation style                 Set |b:abbot_cite_style| to
     -------------------------      -------------------------
-    American Chemical Society      "a" or "acs" (default)
+    American Chemical Society      "a" or "acs"
+    ACS (without title and DOI)    "acs-short"
     BibLaTeX                       "b" or "bib"
 
-Depending on the filetype you are working on, you may want to choose one of
-these. For example, you can place the following in ~/.vim/ftplugin/bib.vim
-to make |abbot| output BibLaTeX citations in .bib files:
+"bib" is the default setting in `.bib` files; in all other files, "acs" is the
+default.
+
+Note that this is a |buffer-variable| `b:abbot_cite_style`, not a
+|global-variable| `g:...`! The reason is because you may want to set this in a
+buffer-dependent manner. For example, .bib buffers should have this set to
+"bib" but other buffers should not.
+
+This can be configured on a filetype-specific level using vim's |ftplugin|
+mechanism. For example, placing 
 >
-    let g:abbot_cite_style="bib"
+    let b:abbot_cite_style = "bib"
+
+inside the `~/.vim/ftplugin/tex.vim` file will make abbotsbury.vim output
+BibLaTeX citations in TeX files. (Why exactly you might want to do that is not
+obvious, but the point is that you can.)
+
 
 ------------------------------------------------------------------------------
  3.2  OUTPUT FORMAT                                  *abbot-cite-format*
-                                                     *g:abbot_cite_format*
+                                                     *b:abbot_cite_format*
 
 Likewise, |abbot| also supports output in several different formats. As of the
 time of writing, these are:
 
-    Output format            Set |g:abbot_cite_format| to
+    Output format            Set |b:abbot_cite_format| to
     ----------------         ------------------------------
-    Plain text               "t" or "text" (default)
+    Plain text               "t" or "text"
     Markdown                 "m" or "md" or "markdown"
     reStructuredText         "r" or "rst" or "restructured"
     HTML                     "h" or "html"
 
+The default is filetype-specific: in Markdown/RST/HTML files, the default is
+"markdown"/"rst"/"html". In all other files the default is "text".
+
 As with the citation style (|abbot-cite-style|), you may want to change this
-on a per-filetype basis. For example, you can place the following in
-~/.vim/ftplugin/markdown.vim:
->
-    let g:abbot_cite_format="md"
+on a per-filetype basis.
 
 ------------------------------------------------------------------------------
  3.3  CHOOSING HOW MUCH TEXT TO REPLACE              *abbot-replace-text*
-                                                     *g:abbot_replace_text*
+                                                     *b:abbot_replace_text*
 
 When you expand a DOI into a citation, you can change exactly how the DOI is
-replaced with the generated citation using |g:abbot_replace_text|. It is
+replaced with the generated citation using |b:abbot_replace_text|. It is
 probably easiest to demonstrate this with some (rather contrived) examples.
 
     'none' - This simply pastes the citation on the line after the DOI. It
@@ -169,11 +182,11 @@ need to provide some kind of contact information. The benefit of this is that
 you get redirected to a "polite" user pool which is sometimes faster.
 
 There are two ways of doing this. You can either make sure that the
-$ABBOT_EMAIL environment variable is set to your own email, or if you don't
+`$ABBOT_EMAIL` environment variable is set to your own email, or if you don't
 want to do that, you can tell |abbotsbury-vim| to try and get your email from
 your Git configuration file:
 >
-    let g:abbot_use_git_email=1
+    let g:abbot_use_git_email = 1
 
 ------------------------------------------------------------------------------
  3.5  DEFAULT MAPS                                   *abbot-default-map*
@@ -184,9 +197,9 @@ The default sequence of keys for expanding DOIs is
     <leader>ex
 
 However, you might not like this. In order to replace the default keymap, you
-can place the following in your .vimrc:
+can place the following in your `.vimrc`:
 >
-    let g:abbot_use_default_mapping=0
+    let g:abbot_use_default_mapping = 0
     nmap <silent> {lhs} <plug>AbbotExpandDoi
 
 This will make the series of keys {lhs} perform the DOI expansion.
