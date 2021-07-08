@@ -1,26 +1,15 @@
-" Sentinel value to use whenever the executable isn't found.
-let s:abbot_not_found = [0, 0, 0, 0]
+function abbot#cite#expand_doi() abort  " {{{1
+    " Expand a DOI in a file into a full citation.
 
-" Cache the executable version so that we don't check it literally every time.
-let s:abbot_version_is_cached = v:false
-let s:abbot_version_cache_value = s:abbot_not_found
-
-" The main function.
-function abbot#cite#expand_doi() abort
-    " Check whether abbot exists, and whether it is sufficiently up-to-date.
-    let abbot_version = s:get_abbot_version()
-    if abbot_version == s:abbot_not_found
-        call abbot#utils#error('`abbot` executable was not found')
-        return 1
-    elseif s:compare_version(abbot_version, [0, 3, 1, 0]) < 0
-        call abbot#utils#error('requires `abbot` version 0.3.1.0 or newer, please update `abbot`')
-        return 1
+    " Check minimum version of abbot required for this
+    if !abbot#utils#check_version([0, 3, 1, 0])
+        call abbot#utils#error('abbot v0.3.1.0 or higher is required for DOI expansion')
     endif
 
     " Check that style is set
     if !exists('b:abbot_cite_style')
-        call abbot#utils#error('no citation style was defined')
-        return 1
+        call abbot#utils#error('no citation style was defined; please set b:abbot_cite_style')
+        return
     endif
 
     " Grab the DOI
@@ -31,7 +20,7 @@ function abbot#cite#expand_doi() abort
     " https://www.crossref.org/blog/dois-and-matching-regular-expressions/
     if doi !~? '\v^10\.\d{4,9}/\S+$'
         call abbot#utils#error('invalid DOI ' . doi)
-        return 1
+        return
     else
         let escaped_doi = shellescape(doi)
     endif
@@ -81,57 +70,7 @@ function abbot#cite#expand_doi() abort
             call append('.', stdout_lines[1:])
         endif
     endif
-    return exit_code
 endfunction
+" }}}1
 
-
-" Check whether the `abbot` executable exists, and get its version. If the
-" executable doesn't exist this returns [0, 0, 0, 0].
-function s:get_abbot_version() abort
-    if s:abbot_version_is_cached
-        return s:abbot_version_cache_value
-    else
-        if !executable("abbot")
-            let s:abbot_version_is_cached = v:true
-            let s:abbot_version_cache_value = s:abbot_not_found
-            return s:abbot_not_found
-        endif
-        silent let output = system('abbot --version')
-        let abbot_version = split(split(trim(output))[2], '\.')
-        call map(abbot_version, 'str2nr(v:val)')
-        let s:abbot_version_is_cached = v:true
-        let s:abbot_version_cache_value = abbot_version
-        return abbot_version
-    endif
-endfunction
-
-
-" Check two version numbers. Returns +1 if v1 > v2, etc. (similar to strcmp).
-" This assumes that both versions passed (a:v1 and a:v2) are lists of four
-" numbers.
-function s:compare_version(v1, v2) abort
-    if a:v1[0] > a:v2[0]
-        return 1
-    elseif a:v1[0] < a:v2[0]
-        return -1
-    else
-        if a:v1[1] > a:v2[1]
-            return 1
-        elseif a:v1[1] < a:v2[1]
-            return -1
-        else
-            if a:v1[2] > a:v2[2]
-                return 1
-            elseif a:v1[2] < a:v2[2]
-                return -1
-            else
-                if a:v1[3] > a:v2[3]
-                    return 1
-                elseif a:v1[3] < a:v2[3]
-                    return -1
-                endif
-            endif
-        endif
-    endif
-    return 0
-endfunction
+" vim: foldmethod=marker

@@ -1,9 +1,8 @@
-function! abbot#parse#parse_modeline() abort
+function! abbot#parse#modeline() abort  " {{{1
     " Checks the first and last lines of the buffer for a @COMMENT line
     " specifying where the abbot refs are. Returns the full path to the
     " abbot.yaml file.
     " The modeline is resolved WRT the directory that contains the bib file.
-
     let l:pattern = '^\s*@COMMENT\s*abbotsbury-vim:'
     if getline(1) =~? l:pattern
         let l:location = trim(s:split_at_first_colon(getline(1)))
@@ -29,27 +28,22 @@ function! abbot#parse#parse_modeline() abort
 
     return filereadable(l:location) ? simplify(l:location) : ''
 endfunction
+" }}}1
 
 
-
-function! abbot#parse#parse_entries(fname) abort
+function! abbot#parse#entries(fname) abort  " {{{1
     return map(s:get_entries(a:fname), function('s:parse_one_entry'))
 endfunction
-
-
-function! s:get_entries(fname) abort
-    " let l:contents = []
+" }}}1
+function! s:get_entries(fname) abort  " {{{1
     try
         let l:contents = readfile(a:fname)
     catch /E484/
-        echohl ErrorMsg
-        echo 'abbotsbury.vim: cannot find file ' . a:fname . ' (E484)'
-        echohl None
-        return
+        call abbot#utils#error('cannot find file ' . a:fname . ' (E484)')
+        return 1
     endtry
 
     let l:entries = []
-
     " Split contents up into sub-lists, one per entry
     while 1
         " Must search from second line, otherwise this will always be 0.
@@ -66,11 +60,10 @@ function! s:get_entries(fname) abort
 
     return l:entries
 endfunction
-
-
-function! s:parse_one_entry(idx, entry) abort
-    " Returns a dictionary with the following keys: work_type, title,
-    " firstAuthor, and year.
+" }}}1
+function! s:parse_one_entry(idx, entry) abort  " {{{1
+    " Returns a dictionary with the following keys: work_type, title, journal,
+    " authors (which is a list of non-null family names), and year.
 
     " First figure out workType, since that influences the rest of our choices
     let l:work_type = match(a:entry, 'tag: BookWork') != -1 ? 'book'
@@ -125,11 +118,15 @@ function! s:parse_one_entry(idx, entry) abort
                 \ 'year': l:year,
                 \ }
 endfunction
+" }}}1
 
 
-function! s:split_at_first_colon(text) abort
-    " splits at colons, but only the first one
+function! s:split_at_first_colon(text) abort " {{{1
+    " Splits at colons, but only the first one.
     let l:colon = match(a:text, ':')
     return l:colon == -1 ? a:text : a:text[l:colon + 1:]
     endif
 endfunction
+" }}}1
+
+" vim: foldmethod=marker
