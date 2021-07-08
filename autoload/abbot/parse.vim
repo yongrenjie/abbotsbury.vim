@@ -3,7 +3,7 @@ function! abbot#parse#modeline() abort  " {{{1
     " specifying where the abbot refs are. Returns the full path to the
     " abbot.yaml file.
     " The modeline is resolved WRT the directory that contains the bib file.
-    let l:pattern = '^\s*@COMMENT\s*abbotsbury-vim:'
+    let l:pattern = '^\s*@COMMENT\s*abbotsbury.vim:'
     if getline(1) =~? l:pattern
         let l:location = trim(s:split_at_first_colon(getline(1)))
     elseif getline('$') =~? l:pattern
