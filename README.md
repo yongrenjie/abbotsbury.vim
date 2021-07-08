@@ -21,4 +21,4 @@ https://user-images.githubusercontent.com/22414895/124992953-95738400-e03b-11eb-
 
 ### Autocompletion demo
 
-https://user-images.githubusercontent.com/22414895/124993273-0e72db80-e03c-11eb-8c53-a2dcb4f8708b.mov
+https://user-images.githubusercontent.com/22414895/124993343-29dde680-e03c-11eb-887a-9507b0f5856c.mov
