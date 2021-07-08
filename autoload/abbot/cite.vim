@@ -10,16 +10,16 @@ function abbot#cite#expand_doi() abort
     " Check whether abbot exists, and whether it is sufficiently up-to-date.
     let abbot_version = s:get_abbot_version()
     if abbot_version == s:abbot_not_found
-        call s:abbot_error('`abbot` executable was not found')
+        call abbot#utils#error('`abbot` executable was not found')
         return 1
     elseif s:compare_version(abbot_version, [0, 3, 1, 0]) < 0
-        call s:abbot_error('requires `abbot` version 0.3.1.0 or newer, please update `abbot`')
+        call abbot#utils#error('requires `abbot` version 0.3.1.0 or newer, please update `abbot`')
         return 1
     endif
 
     " Check that style is set
     if !exists('b:abbot_cite_style')
-        call s:abbot_error('no citation style was defined')
+        call abbot#utils#error('no citation style was defined')
         return 1
     endif
 
@@ -30,7 +30,7 @@ function abbot#cite#expand_doi() abort
     " server)
     " https://www.crossref.org/blog/dois-and-matching-regular-expressions/
     if doi !~? '\v^10\.\d{4,9}/\S+$'
-        call s:abbot_error('invalid DOI ' . doi)
+        call abbot#utils#error('invalid DOI ' . doi)
         return 1
     else
         let escaped_doi = shellescape(doi)
@@ -48,7 +48,7 @@ function abbot#cite#expand_doi() abort
     
     " Get the citation
     echo 'abbotsbury.vim: expanding DOI ' . doi . '...'
-    let [exit_code, stdout, stderr] = s:system_sync(command)
+    let [exit_code, stdout, stderr] = abbot#utils#system_sync(command)
     if exit_code
         echohl ErrorMsg | echo stderr | echohl None
     else
@@ -82,31 +82,6 @@ function abbot#cite#expand_doi() abort
         endif
     endif
     return exit_code
-endfunction
-
-
-" Runs a system command synchronously (blocking vim operation) and returns a
-" list of three items: the exit code, the sanitised stdout, and the sanitised
-" stderr. 'Sanitised' in this case refers to stripping all ANSI escape codes
-" as well as unprintable characters.
-" Note that, because separating stdout from stderr is extremely painful, this
-" function assumes that stdout and stderr are mutually exclusive. That is, if
-" the command runs successfully then it only prints to stdout; and if it fails
-" then it only prints to stderr.
-function s:system_sync(command) abort
-    silent let output = system(a:command)
-    let sanitised_output = trim(substitute(output, '\e\[[0-9;]*m\|[^[:print:]\n]', '', 'g'))
-    if v:shell_error
-        return [v:shell_error, "", sanitised_output]
-    else
-        return [v:shell_error, sanitised_output, ""]
-    endif
-endfunction
-
-
-" Pretty-print an error message.
-function s:abbot_error(err_msg) abort
-    echohl ErrorMsg | echo 'abbotsbury.vim: ' . a:err_msg | echohl None
 endfunction
 
 
