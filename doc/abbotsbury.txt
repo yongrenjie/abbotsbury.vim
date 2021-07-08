@@ -15,13 +15,15 @@ CONTENTS                                             *abbot-contents*
   1.1  The abbot command-line executable ........... |abbot-installation-exe|
   1.2  The abbotsbury.vim plugin ................... |abbot-installation-vim|
 2. Usage ........................................... |abbot-usage|
+  2.1  Citation generation ......................... |abbot-cite|
+  2.2  Autocompletion from abbot.yaml files ........ |abbot-complete|
 3. Settings ........................................ |abbot-settings|
   3.1  Citation style .............................. |abbot-cite-style|
   3.2  Output format ............................... |abbot-cite-format|
   3.3  Choosing how much text to replace ........... |abbot-replace-text|
   3.4  Using your git email for Crossref............ |abbot-git-email|
   3.5  Default maps ................................ |abbot-default-map|
-  3.6  Bib autocompletion from abbot.yaml .......... |abbot-bib-complete|
+  3.6  Bib autocompletion .......................... |abbot-bib-complete|
 4. Contact ......................................... |abbot-contact|
 
 
