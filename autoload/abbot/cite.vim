@@ -45,7 +45,7 @@ function abbot#cite#expand_doi() abort  " {{{1
         redraw!
         let stdout_lines = split(stdout, "\n")
         " Replace text as necessary.
-        if g:abbot_replace_text == 'none'
+        if b:abbot_replace_text == 'none'
             call append('.', stdout_lines)
         elseif b:abbot_replace_text == 'word'
             let old_line = getline('.')
