@@ -10,9 +10,10 @@ Last updated: 4 July 2021
 ==============================================================================
 CONTENTS                                             *abbot-contents*
 
+0.   Introduction .................................. |abbot-introduction|
 1.   Installation .................................. |abbot-installation|
-  1.1  The abbot command-line executable ........... |abbot-executable|
-  1.2  The abbotsbury.vim plugin ................... |abbot-vim-plugin|
+  1.1  The abbot command-line executable ........... |abbot-installation-exe|
+  1.2  The abbotsbury.vim plugin ................... |abbot-installation-vim|
 2. Usage ........................................... |abbot-usage|
 3. Settings ........................................ |abbot-settings|
   3.1  Citation style .............................. |abbot-cite-style|
@@ -20,61 +21,155 @@ CONTENTS                                             *abbot-contents*
   3.3  Choosing how much text to replace ........... |abbot-replace-text|
   3.4  Using your git email for Crossref............ |abbot-git-email|
   3.5  Default maps ................................ |abbot-default-map|
+  3.6  Bib autocompletion from abbot.yaml .......... |abbot-bib-complete|
 4. Contact ......................................... |abbot-contact|
+
+
+==============================================================================
+
+ 0    INTRODUCTION                                   *abbot-introduction*
+
+`abbotsbury` is a series of programmes used for reference management and
+citation generation. As of the time of writing, there are 3 parts to
+abbotsbury:
+
+                                                     *abbot-library*
+ - A Haskell library for fetching reference metadata from Crossref and
+   creating citations from them. You generally do not ever need to install
+   this, unless you are really interested in it.
+
+                                                     *abbot-executable*
+ - A command-line executable which uses the Haskell library to do the above,
+   and is also capable of storing and managing 'reference lists', much like a
+   traditional citation manager such as Endnote / Mendeley. (Except that it's
+   a command-line programme, not a GUI.) In order to use this plugin, you will
+   need to install the executable: see |abbot-installation-exe|.
+
+                                                     *abbot-plugin*
+ - This plugin, which allows vim to make use of the functionality provided by
+   the command-line executable. If you are reading this, you have probably
+   already installed the plugin! But see |abbot-installation-vim| if you need
+   instructions.
+
+The names `abbotsbury` and `abbot` are generally used interchangeably within
+this document.
 
 
 ==============================================================================
  1    INSTALLATION                                   *abbot-installation*
 
 ------------------------------------------------------------------------------
- 1.1  THE ABBOT COMMAND-LINE EXECUTABLE              *abbot-executable*
+ 1.1  THE ABBOT COMMAND-LINE EXECUTABLE              *abbot-installation-exe*
 
-To use abbotsbury.vim, you need to first install the abbot command-line
-programme. If you are on macOS, this is most easily accomplished via Homebrew:
+To use `abbotsbury.vim`, you need to first install the |abbot-executable|
+command-line programme. If you are on macOS, this is most easily accomplished
+via Homebrew:
 >
     $ brew tap yongrenjie/abbotsbury
     $ brew install abbotsbury
 
-For Linux and macOS, there are precompiled binaries available on GitHub:
+For Linux and macOS, there are precompiled binaries available on GitHub, which
+you can download directly and place somewhere in `$PATH`:
 
     https://github.com/yongrenjie/abbotsbury/releases
 
-You can also compile from source. To do this, you will need a Haskell
-installation as well as the cabal-install tool. Then run:
+You can also compile from source, if you really want to. To do this, you will
+need a Haskell installation as well as the cabal-install tool. Then run:
 >
     $ git clone https://github.com/yongrenjie/abbotsbury
     $ cd abbotsbury
     $ cabal install exe:abbot
 
 and ensure that the directory that cabal installs the executables to is placed
-in the PATH environment variable. By default this is ~/.cabal/bin.
+in `$PATH`. By default this directory is `~/.cabal/bin`.
 
-Note that the plugin will only work with v0.3.1.0 and above of abbot. You can
-check this after installation by running
+Note that certain functionality of the plugin requires recent versions of the
+executable. After installation, you can check the version number by running:
 >
     $ abbot --version
 
 ------------------------------------------------------------------------------
- 1.2  THE ABBOTSBURY.VIM PLUGIN                      *abbot-vim-plugin*
+ 1.2  THE ABBOTSBURY.VIM PLUGIN                      *abbot-installation-vim*
 
-You can obtain this plugin via all the usual methods, such as vim-plug etc.
+You can obtain this plugin via all the usual methods, such as vim-plug: >
+
+    Plug 'yongrenjie/abbotsbury.vim'
+
 The GitHub repository is
 
     https://github.com/yongrenjie/abbotsbury.vim
 
-abbotsbury.vim requires vim v8.0.1630 or later.
+so you can also directly clone this inside the `~/.vim/pack/<X>/start`
+directory if you wish to use Vim 8's native |packages| feature.
+
+                                                    *abbot-vim-version*
+                                                    *abbot-neovim*
+abbotsbury.vim requires Vim v8.0.1630 or later. It doesn't work on Neovim as
+of now, although this is not a fundamental incompatibility, it's more that I'm
+lazy.
 
 
 ==============================================================================
  2    USAGE                                          *abbot-usage*
 
-The basic premise of |abbotsbury-vim| is that you place your cursor over a DOI
-and expand it into a citation. You should either use the default mapping,
-which does this:
+------------------------------------------------------------------------------
+ 2.1  CITATION GENERATION                            *abbot-cite*
+
+The basic premise of |abbot-plugin| is that you place your cursor over a DOI
+and expand it into a citation through some series of keypresses. (Yes, that's
+almost all there is to it!) By default, |abbot-plugin| defines the mapping
 
     <leader>ex
 
-or define your own mapping (see |abbot-default-map| for instructions).
+for you. If you don't like this, see |abbot-default-map| for instructions.
+
+One thing that should be noted here is that you must provide an email with
+all Crossref queries, e.g. fetching metadata. You can either tell `abbotsbury`
+to read your `.gitconfig` email for you (which is turned OFF by default
+because of privacy, enable |g:abbot_use_git_email| if you want this); or set
+your email as the `$ABBOT_EMAIL` environment variable.
+
+There are a few associated settings which control the output of text, although
+they are all meant to have sensible defaults. See:
+
+|b:abbot_cite_style|    Specifies the citation style
+|b:abbot_cite_format|   Specifies how bold / italic text is to be formatted
+|b:abbot_replace_text|  Controls how much text is replaced when expanding DOIs
+
+------------------------------------------------------------------------------
+ 2.2  AUTOCOMPLETION FROM ABBOT.YAML FILES           *abbot-complete*
+
+If you also happen to use the |abbot-executable| as a command-line reference
+manager (in lieu of a traditional alternative such as Endnote), then you may
+find the above to be unnecessarily clunky.
+
+Ideally, you'd be able to directly use autocomplete to select from a list of
+references which you already saved in an `abbot.yaml` file.
+
+|abbot-plugin| now provides this functionality. It is turned off by default,
+so you have to enable it using |g:abbot_bib_complete|. With this set to 1, you
+can use <C-X><C-O> (|omnifunc| completion) on any blank line to get references
+from the file `BIB_DIR/refs/abbot.yaml`, where `BIB_DIR` is the folder
+containing the bib file you are working on.
+
+If you want to specify a particular file from which references are obtained,
+then you need to include a magic comment in the bib file, either at the very
+first line, or the very last line, which looks like this:
+>
+    @COMMENT abbotsbury.vim: ~/refs/abbot.yaml
+
+Then |abbot-plugin| will read that particular file. You can leave out the
+`abbot.yaml` filename and it will look for that file in the specified
+directory, so 
+>
+    @COMMENT abbotsbury.vim: ~/refs
+
+is also fine. Any relative paths are resolved with respect to `BIB_DIR`.
+
+Autocomplete entries are rejected if the title of the work fuzzy-matches any
+existing line in the existing buffer. This is to prevent you from adding the
+same reference twice.
+
 
 ==============================================================================
  3    SETTINGS                                       *abbot-settings*
@@ -203,6 +298,16 @@ can place the following in your `.vimrc`:
     nmap <silent> {lhs} <plug>AbbotExpandDoi
 
 This will make the series of keys {lhs} perform the DOI expansion.
+
+------------------------------------------------------------------------------
+ 3.6  BIB AUTOCOMPLETION                             *abbot-bib-complete*
+                                                     *g:abbot_bib_complete*
+
+Bib autocompletion is explained in |bib-complete|. By default this is turned
+off. To enable it, use:
+>
+    let g:abbot_bib_complete = 1
+
 
 ==============================================================================
  4    CONTACT                                        *abbot-contact*
