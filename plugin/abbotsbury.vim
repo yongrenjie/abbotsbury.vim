@@ -14,5 +14,5 @@ endif
 
 call abbot#initialise()
 augroup abbotsbury_ft
-    autocmd FileType * call abbot#initialise_ft()
+    autocmd FileType * call abbot#initialise_buffer()
 augroup END

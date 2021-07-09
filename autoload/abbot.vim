@@ -1,9 +1,6 @@
 function! abbot#initialise() abort  " {{{1
     " General settings, which are not filetype-dependent and can be set
     " immediately upon startup.
-    if !exists('b:abbot_replace_text')
-        let b:abbot_replace_text = 'word'
-    endif
     if !exists('g:abbot_use_git_email')
         let g:abbot_use_git_email = v:false
     endif
@@ -21,8 +18,8 @@ function! abbot#initialise() abort  " {{{1
 endfunction
 " }}}1
 
-function! abbot#initialise_ft() abort  " {{{1
-    " Initialise filetype-dependent options. Note that this function relies on
+function! abbot#initialise_buffer() abort  " {{{1
+    " Initialise buffer-specific options. Note that this function relies on
     " &filetype to be set, so cannot be triggered immediately upon plugin
     " loading; instead, it can only fire after the filetype has been detected
     " (autocmd FileType).
@@ -39,6 +36,9 @@ function! abbot#initialise_ft() abort  " {{{1
         else
             let b:abbot_cite_format = 'text'
         endif
+    endif
+    if !exists('b:abbot_replace_text')
+        let b:abbot_replace_text = 'word'
     endif
 endfunction
 " }}}1
