@@ -12,9 +12,6 @@ function! abbot#initialise() abort  " {{{1
     endif
 
     nnoremap <silent> <plug>AbbotExpandDoi :<C-U>call abbot#cite#expand_doi()<CR>
-    if g:abbot_use_default_map
-        nmap <silent><buffer> <leader>ex <plug>AbbotExpandDoi
-    endif
 endfunction
 " }}}1
 
@@ -39,6 +36,10 @@ function! abbot#initialise_buffer() abort  " {{{1
     endif
     if !exists('b:abbot_replace_text')
         let b:abbot_replace_text = 'word'
+    endif
+
+    if g:abbot_use_default_map
+        nmap <silent><buffer> <leader>ex <plug>AbbotExpandDoi
     endif
 endfunction
 " }}}1
