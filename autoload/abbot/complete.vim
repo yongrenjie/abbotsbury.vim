@@ -23,11 +23,16 @@ endfunction
 function! s:accept_complete(base, lines, entry) abort  " {{{1
     " This function returns 0 if the reference is already present in the bib
     " file (by performing fuzzy matching against every line in the file).
+    let l:match_score_threshold = 0
     
     " Remove non-alphabetical characters from the title (to avoid confusion
     " over LaTeX escaping preventing the match from happening)
-    let l:title_only_alpha = join(split(a:entry['menu'], '\A'), ' ')
-    return empty(matchfuzzy(a:lines, l:title_only_alpha))
+    let l:title_only_alpha = a:entry['menu']
+                \ ->split('\A')
+                \ ->filter({idx, val -> !empty(val)})
+                \ ->join(' ')
+    let l:matches = matchfuzzypos(a:lines, l:title_only_alpha)
+    return empty(l:matches) || max(l:matches[2]) <= l:match_score_threshold
 endfunction
 " }}}1
 function! s:convert_entry(idx, entry) abort  " {{{1
