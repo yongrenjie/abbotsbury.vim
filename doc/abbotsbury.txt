@@ -158,13 +158,13 @@ If you want to specify a particular file from which references are obtained,
 then you need to include a magic comment in the bib file, either at the very
 first line, or the very last line, which looks like this:
 >
-    @COMMENT abbotsbury.vim: ~/refs/abbot.yaml
+    % abbotsbury.vim: ~/refs/abbot.yaml
 
 Then |abbot-plugin| will read that particular file. You can leave out the
 `abbot.yaml` filename and it will look for that file in the specified
 directory, so 
 >
-    @COMMENT abbotsbury.vim: ~/refs
+    % abbotsbury.vim: ~/refs
 
 is also fine. Any relative paths are resolved with respect to `BIB_DIR`.
 
