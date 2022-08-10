@@ -7,8 +7,8 @@ if !executable('abbot')
     finish
 endif
 
-if !(v:version > 800 || (v:version == 800 && has('patch1630')))
-    call abbot#utils#error('vim v8.0.1630 or newer is required')
+if !(v:version > 802 || (v:version == 802 && has('patch2344')))
+    call abbot#utils#error('vim v8.2.2344 or newer is required')
     finish
 endif
 

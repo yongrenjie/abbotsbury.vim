@@ -50,8 +50,8 @@ function abbot#cite#expand_doi() abort  " {{{1
         elseif b:abbot_replace_text == 'word'
             let old_line = getline('.')
             let x = match(old_line, '\m' . doi)
-            let stdout_lines[0] = slice(old_line, 0, x) . stdout_lines[0]
-            let stdout_lines[-1] = stdout_lines[-1] . slice(old_line, x + len(doi))
+            let stdout_lines[0] = s:slice(old_line, 0, x) . stdout_lines[0]
+            let stdout_lines[-1] = stdout_lines[-1] . s:slice(old_line, x + len(doi))
             call setline('.', stdout_lines[0])
             call append('.', stdout_lines[1:])
         elseif b:abbot_replace_text == 'line'
@@ -69,6 +69,39 @@ function abbot#cite#expand_doi() abort  " {{{1
             call setline('.', stdout_lines[0])
             call append('.', stdout_lines[1:])
         endif
+    endif
+endfunction
+" }}}1
+
+function! s:slice(list, start, ...) abort "{{{1
+    " Patched version of slice() as it doesn't exist in nvim.
+    " Note: this is only guaranteed to work with lists or strings. I also
+    " haven't tested this very much (but for our use case it should be good
+    " enough).
+
+    " Construct an empty member of the appropriate type
+    function! s:mempty(in)
+        if type(a:in) == 3  " list
+            return []
+        elseif type(a:in) == 1  " string
+            return ""
+        endif
+    endfunction
+
+    if has('nvim')
+        if empty(a:0)
+            return a:list[(a:start):]
+        else
+            if (a:1 == 0) || (a:start == a:1)
+                " slice(x, 0, 0), slice(x, 1, 1), and slice(x, 1, 0) should all be empty
+                return s:mempty(a:list)
+            else
+                " otherwise just subtract 1 from the end value
+                return a:list[(a:start):(a:1 - 1)]
+            endif
+        endif
+    else
+        return empty(a:0) ? slice(a:list, a:start) : slice(a:list, a:start, a:1)
     endif
 endfunction
 " }}}1
