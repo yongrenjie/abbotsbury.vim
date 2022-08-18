@@ -71,6 +71,10 @@ endfunction
 
 
 function! abbot#complete#expand(completed_item)  " {{{1
+    if complete_info().mode != 'omni'
+        return
+    endif
+
     " Takes the autocompleted word and replaces it with abbot's citation.
     if empty(v:completed_item) || !has_key(v:completed_item, 'word')
         return
